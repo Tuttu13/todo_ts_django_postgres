@@ -10,6 +10,17 @@ class CustomPagination(PageNumberPagination):
     page_size = 5  # 1ページあたりのアイテム数
     page_size_query_param = 'page_size'
 
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'page_size': self.page_size,
+            'results': data
+        })
+
 class ListView(generics.ListCreateAPIView):
     queryset = Task.objects.all().order_by('due_date')
     serializer_class = TaskSerializer
@@ -22,7 +33,7 @@ class DetailView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['GET'])
 def task_summary(request):
     total_tasks = Task.objects.count()
-    completed_tasks = Task.objects.filter(status=2).count()  # assuming 2 is "completed"
+    completed_tasks = Task.objects.filter(status=2).count()
     return Response({
         'total_tasks': total_tasks,
         'completed_tasks': completed_tasks
