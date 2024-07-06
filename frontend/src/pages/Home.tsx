@@ -135,6 +135,9 @@ const Home: React.FC = () => {
         >
           前
         </Button>
+        <Typography variant="body1" sx={{ display: "inline", marginX: 2 }}>
+          {currentPage} / {totalPages}
+        </Typography>
         <Button
           variant="outlined"
           onClick={() => handlePageChange(currentPage + 1)}
