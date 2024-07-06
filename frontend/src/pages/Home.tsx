@@ -4,7 +4,13 @@ import TaskDetailModal from "../components/TaskDetailModal";
 import TaskFormModal from "../components/TaskFormModal";
 import TaskList from "../components/TaskList";
 import TaskSummary from "../components/TaskSummary";
-import { createTask, deleteTask, getTasks, updateTask } from "../services/api";
+import {
+  createTask,
+  deleteTask,
+  getTasks,
+  getTaskSummary,
+  updateTask,
+} from "../services/api";
 import { Task } from "../types/Task";
 
 const Home: React.FC = () => {
@@ -15,6 +21,8 @@ const Home: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalTasks, setTotalTasks] = useState<number>(0);
+  const [completedTasks, setCompletedTasks] = useState<number>(0);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -26,7 +34,19 @@ const Home: React.FC = () => {
         console.error("Error fetching tasks:", error);
       }
     };
+
+    const fetchTaskSummary = async () => {
+      try {
+        const summary = await getTaskSummary();
+        setTotalTasks(summary.total_tasks);
+        setCompletedTasks(summary.completed_tasks);
+      } catch (error) {
+        console.error("Error fetching task summary:", error);
+      }
+    };
+
     fetchTasks();
+    fetchTaskSummary();
   }, [currentPage]);
 
   const handleAddTask = () => {
@@ -47,8 +67,11 @@ const Home: React.FC = () => {
         await createTask(task);
       }
       const { tasks, totalPages } = await getTasks(currentPage);
+      const summary = await getTaskSummary();
       setTasks(tasks);
       setTotalPages(totalPages);
+      setTotalTasks(summary.total_tasks);
+      setCompletedTasks(summary.completed_tasks);
       setFormModalOpen(false);
     } catch (error) {
       console.error("Error saving task:", error);
@@ -59,8 +82,11 @@ const Home: React.FC = () => {
     try {
       await deleteTask(taskId);
       const { tasks, totalPages } = await getTasks(currentPage);
+      const summary = await getTaskSummary();
       setTasks(tasks);
       setTotalPages(totalPages);
+      setTotalTasks(summary.total_tasks);
+      setCompletedTasks(summary.completed_tasks);
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -71,12 +97,8 @@ const Home: React.FC = () => {
     setDetailModalOpen(true);
   };
 
-  const handlePageChange = (direction: "prev" | "next") => {
-    if (direction === "prev" && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    } else if (direction === "next" && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -84,7 +106,7 @@ const Home: React.FC = () => {
       <Typography variant="h4" align="center" gutterBottom>
         TODOアプリ
       </Typography>
-      <TaskSummary />
+      <TaskSummary totalTasks={totalTasks} completedTasks={completedTasks} />
       <Box
         sx={{
           textAlign: "right",
@@ -107,7 +129,7 @@ const Home: React.FC = () => {
       <Box sx={{ textAlign: "center", marginTop: 2 }}>
         <Button
           variant="outlined"
-          onClick={() => handlePageChange("prev")}
+          onClick={() => handlePageChange(currentPage - 1)}
           sx={{ marginRight: 1 }}
           disabled={currentPage === 1}
         >
@@ -115,8 +137,7 @@ const Home: React.FC = () => {
         </Button>
         <Button
           variant="outlined"
-          onClick={() => handlePageChange("next")}
-          sx={{ marginLeft: 1 }}
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           次
