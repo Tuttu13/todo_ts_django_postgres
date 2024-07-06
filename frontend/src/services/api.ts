@@ -8,7 +8,7 @@ export const getTasks = async (
   page: number = 1
 ): Promise<{ tasks: Task[]; totalPages: number }> => {
   const response = await axios.get(`${API_BASE_URL}?page=${page}`);
-  const pageSize = response.data.page_size || response.data.results.length;
+  const pageSize = response.data.page_size;
   const totalPages = Math.ceil(response.data.count / pageSize);
 
   return { tasks: response.data.results, totalPages };
