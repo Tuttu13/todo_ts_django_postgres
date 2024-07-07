@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import { Task } from "../types/Task";
-import { priorityMap, statusMap } from "../utils";
+import { formatDateToLocal, priorityMap, statusMap } from "../utils";
 
 interface TaskFormModalProps {
   open: boolean;
@@ -38,11 +38,17 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
   );
 
   const [task, setTask] = useState<Task>(initialTaskState);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (open) {
       if (taskToEdit) {
-        setTask(taskToEdit);
+        setTask({
+          ...taskToEdit,
+          due_date: taskToEdit.due_date
+            ? formatDateToLocal(taskToEdit.due_date)
+            : "",
+        });
       } else {
         setTask(initialTaskState);
       }
@@ -52,11 +58,28 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTask({ ...task, [name]: value });
+
+    if (value.trim() !== "") {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!task.title.trim()) newErrors.title = "題名は必須です。";
+    if (!task.description.trim()) newErrors.description = "詳細は必須です。";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSave = async () => {
-    await onSave(task);
-    onClose();
+    if (validate()) {
+      if (!task.due_date) {
+        task.due_date = null; // due_dateをオプションにする
+      }
+      await onSave(task);
+      onClose();
+    }
   };
 
   return (
@@ -72,6 +95,12 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           onChange={handleChange}
           fullWidth
           margin="normal"
+          required
+          error={!!errors.title}
+          helperText={errors.title}
+          placeholder="題名を入力"
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
         />
         <TextField
           label="詳細"
@@ -80,6 +109,12 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           onChange={handleChange}
           fullWidth
           margin="normal"
+          required
+          error={!!errors.description}
+          helperText={errors.description}
+          placeholder="詳細を入力"
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
         />
         <TextField
           label="ステータス"
@@ -90,6 +125,11 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           onChange={handleChange}
           fullWidth
           margin="normal"
+          required
+          error={!!errors.status}
+          helperText={errors.status}
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
         >
           {Object.entries(statusMap).map(([key, value]) => (
             <option key={key} value={key}>
@@ -106,6 +146,11 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           onChange={handleChange}
           fullWidth
           margin="normal"
+          required
+          error={!!errors.priority}
+          helperText={errors.priority}
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
         >
           {Object.entries(priorityMap).map(([key, value]) => (
             <option key={key} value={key}>
@@ -124,7 +169,10 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
           InputLabelProps={{
             shrink: true,
           }}
+          error={!!errors.due_date}
+          helperText={errors.due_date}
           placeholder="期限なし"
+          variant="outlined"
         />
       </DialogContent>
       <DialogActions>
