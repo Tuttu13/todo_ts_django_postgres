@@ -1,4 +1,4 @@
-import { Box, Modal, Typography } from "@mui/material";
+import { Box, Divider, Modal, Typography } from "@mui/material";
 import React from "react";
 import { Task } from "../types/Task";
 import { formatDate, priorityMap, statusMap } from "../utils";
@@ -34,19 +34,24 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         <Typography variant="body1" gutterBottom>
           <strong>タイトル:</strong> {task.title}
         </Typography>
+        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
         <Typography variant="body1" gutterBottom>
           <strong>詳細:</strong> {task.description}
         </Typography>
+        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
         <Typography variant="body1" gutterBottom>
           <strong>ステータス:</strong> {statusMap[task.status]}
         </Typography>
+        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
         <Typography variant="body1" gutterBottom>
           <strong>優先度:</strong> {priorityMap[task.priority]}
         </Typography>
+        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
         <Typography variant="body1" gutterBottom>
           <strong>期限:</strong>{" "}
           {task.due_date ? formatDate(task.due_date) : "なし"}
         </Typography>
+        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
       </Box>
     </Modal>
   );
