@@ -7,7 +7,7 @@ import { formatDate, priorityMap, statusMap } from "../utils";
 interface TaskDetailModalProps {
   open: boolean; // モーダルの開閉状態
   onClose: () => void; // モーダルを閉じる関数
-  task: Task; // 表示するタスクの詳細
+  task?: Task; // 表示するタスクの詳細（オプション）
 }
 
 // TaskDetailModalコンポーネント
@@ -30,30 +30,38 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           borderRadius: 1,
         }}
       >
-        <Typography variant="h6" component="h2" gutterBottom>
-          タスク詳細
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          <strong>タイトル:</strong> {task.title}
-        </Typography>
-        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
-        <Typography variant="body1" gutterBottom>
-          <strong>詳細:</strong> {task.description}
-        </Typography>
-        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
-        <Typography variant="body1" gutterBottom>
-          <strong>ステータス:</strong> {statusMap[task.status]}
-        </Typography>
-        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
-        <Typography variant="body1" gutterBottom>
-          <strong>優先度:</strong> {priorityMap[task.priority]}
-        </Typography>
-        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
-        <Typography variant="body1" gutterBottom>
-          <strong>期限:</strong>{" "}
-          {task.due_date ? formatDate(task.due_date) : "なし"}
-        </Typography>
-        <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
+        {task ? (
+          <>
+            <Typography variant="h6" component="h2" gutterBottom>
+              タスク詳細
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              <strong>タイトル:</strong> {task.title}
+            </Typography>
+            <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
+            <Typography variant="body1" gutterBottom>
+              <strong>詳細:</strong> {task.description}
+            </Typography>
+            <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
+            <Typography variant="body1" gutterBottom>
+              <strong>ステータス:</strong> {statusMap[task.status]}
+            </Typography>
+            <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
+            <Typography variant="body1" gutterBottom>
+              <strong>優先度:</strong> {priorityMap[task.priority]}
+            </Typography>
+            <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
+            <Typography variant="body1" gutterBottom>
+              <strong>期限:</strong>{" "}
+              {task.due_date ? formatDate(task.due_date) : "なし"}
+            </Typography>
+            <Divider sx={{ my: 1, borderBottomWidth: 2 }} />
+          </>
+        ) : (
+          <Typography variant="body1" gutterBottom>
+            タスクの詳細が見つかりません
+          </Typography>
+        )}
       </Box>
     </Modal>
   );

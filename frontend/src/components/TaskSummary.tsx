@@ -7,13 +7,20 @@ interface TaskSummaryProps {
   completedTasks: number; // 完了したタスク数
 }
 
+const styles = {
+  container: {
+    textAlign: "center",
+    mb: 2,
+  },
+};
+
 // TaskSummaryコンポーネント
 const TaskSummary: React.FC<TaskSummaryProps> = ({
   totalTasks,
   completedTasks,
 }) => {
   return (
-    <Box sx={{ textAlign: "center", mb: 2 }}>
+    <Box sx={styles.container}>
       {/* 総タスク数を表示 */}
       <Typography variant="h6">タスク件数: {totalTasks}</Typography>
       {/* 完了タスク数を表示 */}

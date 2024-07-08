@@ -10,15 +10,13 @@ import React, { useEffect, useState } from "react";
 import { Task } from "../types/Task";
 import { formatDateToLocal, priorityMap, statusMap } from "../utils";
 
-// TaskFormModalコンポーネントのプロパティの型定義
 interface TaskFormModalProps {
-  open: boolean; // モーダルの開閉状態
-  onClose: () => void; // モーダルを閉じる関数
-  taskToEdit: Task | null; // 編集対象のタスク
-  onSave: (task: Task) => Promise<void>; // タスク保存時に呼ばれる関数
+  open: boolean;
+  onClose: () => void;
+  taskToEdit: Task | null;
+  onSave: (task: Task) => Promise<void>;
 }
 
-// タスクの初期状態
 const initialTaskState: Task = {
   id: 0,
   title: "",
@@ -30,17 +28,15 @@ const initialTaskState: Task = {
   updated_at: "",
 };
 
-// TaskFormModalコンポーネント
 const TaskFormModal: React.FC<TaskFormModalProps> = ({
   open,
   onClose,
   taskToEdit,
   onSave,
 }) => {
-  const [task, setTask] = useState<Task>(initialTaskState); // タスクの状態
-  const [errors, setErrors] = useState<{ [key: string]: string }>({}); // バリデーションエラーの状態
+  const [task, setTask] = useState<Task>(initialTaskState);
+  const [errors, setErrors] = useState<{ [K in keyof Task]?: string }>({});
 
-  // モーダルが開かれるときに編集対象のタスクをセット
   useEffect(() => {
     if (open) {
       if (taskToEdit) {
@@ -56,7 +52,6 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
     }
   }, [open, taskToEdit]);
 
-  // フォームの入力が変更されたときに状態を更新
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTask({ ...task, [name]: value });
@@ -66,20 +61,18 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
     }
   };
 
-  // フォームのバリデーションを行う関数
   const validate = () => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: { [K in keyof Task]?: string } = {};
     if (!task.title.trim()) newErrors.title = "題名は必須です。";
     if (!task.description.trim()) newErrors.description = "詳細は必須です。";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // 保存ボタンがクリックされたときの処理
   const handleSave = async () => {
     if (validate()) {
       if (!task.due_date) {
-        task.due_date = null; // due_dateをオプションにする
+        task.due_date = "";
       }
       await onSave(task);
       onClose();

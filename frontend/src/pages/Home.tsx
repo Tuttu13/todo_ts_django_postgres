@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TaskDetailModal from "../components/TaskDetailModal";
 import TaskFormModal from "../components/TaskFormModal";
 import TaskList from "../components/TaskList";
@@ -23,31 +23,34 @@ const Home: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalTasks, setTotalTasks] = useState<number>(0);
   const [completedTasks, setCompletedTasks] = useState<number>(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTasks = useCallback(async (page: number) => {
+    try {
+      const { tasks, totalPages } = await getTasks(page);
+      setTasks(tasks);
+      setTotalPages(totalPages);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setError("タスクの取得に失敗しました");
+    }
+  }, []);
+
+  const fetchTaskSummary = useCallback(async () => {
+    try {
+      const summary = await getTaskSummary();
+      setTotalTasks(summary.total_tasks);
+      setCompletedTasks(summary.completed_tasks);
+    } catch (error) {
+      console.error("Error fetching task summary:", error);
+      setError("タスクサマリーの取得に失敗しました");
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const { tasks, totalPages } = await getTasks(currentPage);
-        setTasks(tasks);
-        setTotalPages(totalPages);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    const fetchTaskSummary = async () => {
-      try {
-        const summary = await getTaskSummary();
-        setTotalTasks(summary.total_tasks);
-        setCompletedTasks(summary.completed_tasks);
-      } catch (error) {
-        console.error("Error fetching task summary:", error);
-      }
-    };
-
-    fetchTasks();
+    fetchTasks(currentPage);
     fetchTaskSummary();
-  }, [currentPage]);
+  }, [currentPage, fetchTasks, fetchTaskSummary]);
 
   const handleAddTask = () => {
     setTaskToEdit(null);
@@ -66,29 +69,23 @@ const Home: React.FC = () => {
       } else {
         await createTask(task);
       }
-      const { tasks, totalPages } = await getTasks(currentPage);
-      const summary = await getTaskSummary();
-      setTasks(tasks);
-      setTotalPages(totalPages);
-      setTotalTasks(summary.total_tasks);
-      setCompletedTasks(summary.completed_tasks);
+      await fetchTasks(currentPage);
+      await fetchTaskSummary();
       setFormModalOpen(false);
     } catch (error) {
       console.error("Error saving task:", error);
+      setError("タスクの保存に失敗しました");
     }
   };
 
   const handleDeleteTask = async (taskId: number) => {
     try {
       await deleteTask(taskId);
-      const { tasks, totalPages } = await getTasks(currentPage);
-      const summary = await getTaskSummary();
-      setTasks(tasks);
-      setTotalPages(totalPages);
-      setTotalTasks(summary.total_tasks);
-      setCompletedTasks(summary.completed_tasks);
+      await fetchTasks(currentPage);
+      await fetchTaskSummary();
     } catch (error) {
       console.error("Error deleting task:", error);
+      setError("タスクの削除に失敗しました");
     }
   };
 
@@ -106,6 +103,7 @@ const Home: React.FC = () => {
       <Typography variant="h4" align="center" gutterBottom>
         TODOアプリ
       </Typography>
+      {error && <Typography color="error">{error}</Typography>}
       <TaskSummary totalTasks={totalTasks} completedTasks={completedTasks} />
       <Box
         sx={{

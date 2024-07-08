@@ -10,6 +10,12 @@ interface TaskListProps {
   onViewTask: (task: Task) => void;
 }
 
+const styles = {
+  container: {
+    marginTop: 2,
+  },
+};
+
 const TaskList: React.FC<TaskListProps> = ({
   tasks,
   onEditTask,
@@ -17,7 +23,7 @@ const TaskList: React.FC<TaskListProps> = ({
   onViewTask,
 }) => {
   return (
-    <Box>
+    <Box sx={styles.container}>
       <List>
         {tasks.map((task) => (
           <TaskItem
