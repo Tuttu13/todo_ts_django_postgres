@@ -7,7 +7,7 @@ from todo.serializers import TaskSerializer
 
 
 class CustomPagination(PageNumberPagination):
-    page_size = 5  # 1ページあたりのアイテム数
+    page_size = 3
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
