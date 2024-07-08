@@ -12,11 +12,12 @@ from todo.views import DetailView, ListView, task_summary
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.backend.settings")
 django.setup()
 
+
 @pytest.mark.django_db
 class TestAPIListViewTests:
     @classmethod
     def setup_class(cls):
-        cls.tz = pytz.timezone('Asia/Tokyo')
+        cls.tz = pytz.timezone("Asia/Tokyo")
 
     def setup_method(self):
         self.factory = APIRequestFactory()
@@ -76,8 +77,8 @@ class TestAPIListViewTests:
                 "updated_at": convert_to_isoformat(task2.updated_at),
             },
         ]
-        assert response.data['results'] == expected_data
-        assert len(response.data['results']) == len(expected_data)
+        assert response.data["results"] == expected_data
+        assert len(response.data["results"]) == len(expected_data)
 
     def test_todo_post(self):
         """POSTリクエストで新しいタスクを登録できることを確認"""
@@ -118,7 +119,7 @@ class TestAPIListViewTests:
             for i in range(1, 15)
         ]
 
-        request = self.factory.get(self.url + '?page=1')
+        request = self.factory.get(self.url + "?page=1")
         response = self.view(request)
 
         assert response.status_code == status.HTTP_200_OK
@@ -140,12 +141,12 @@ class TestAPIListViewTests:
             for i in range(0, 3)
         ]
 
-        assert response.data['results'] == expected_data
-        assert len(response.data['results']) == 3
-        assert response.data['count'] == 14
-        assert response.data['page_size'] == 3
-        assert response.data['links']['next'] == "http://testserver/api/todo/?page=2"
-        assert response.data['links']['previous'] is None
+        assert response.data["results"] == expected_data
+        assert len(response.data["results"]) == 3
+        assert response.data["count"] == 14
+        assert response.data["page_size"] == 3
+        assert response.data["links"]["next"] == "http://testserver/api/todo/?page=2"
+        assert response.data["links"]["previous"] is None
 
 
 @pytest.mark.django_db
@@ -211,20 +212,20 @@ class TestAPIDetailViewTests:
         self.task.priority = 1
         self.task.due_date = None
         self.task.save()
-        
+
         # 部分更新データを定義
         data = {"title": "PATCHタスク 処理後"}
-        
+
         # PATCHリクエストを作成
         request = self.factory.patch(self.url, data, format="json")
         response = self.view(request, pk=self.task.pk)
-        
+
         # ステータスコードを確認
         assert response.status_code == status.HTTP_200_OK
 
         # データベースのタスクを更新後の状態にリフレッシュ
         self.task.refresh_from_db()
-        
+
         # 期待されるJSONデータを定義
         expected_data = {
             "id": self.task.id,
@@ -232,11 +233,13 @@ class TestAPIDetailViewTests:
             "description": self.task.description,  # 変更なし
             "status": self.task.status,  # 変更なし
             "priority": self.task.priority,  # 変更なし
-            "due_date": self.task.due_date.isoformat() if self.task.due_date else None,  # 変更なし
+            "due_date": (
+                self.task.due_date.isoformat() if self.task.due_date else None
+            ),  # 変更なし
             "created_at": self.task.created_at.astimezone(self.tz).isoformat(),
             "updated_at": self.task.updated_at.astimezone(self.tz).isoformat(),
         }
-        
+
         # レスポンスデータが期待されるデータと一致することを確認
         assert response.data == expected_data
 
@@ -250,6 +253,7 @@ class TestAPIDetailViewTests:
         # JSONデータを確認（DELETEリクエストにはボディがないため、確認は不要）
         assert Task.objects.count() == 0
 
+
 @pytest.mark.django_db
 class TestAPI_Task_SummaryTests:
     """APIのTask_Summaryに対するテストクラス"""
@@ -258,11 +262,10 @@ class TestAPI_Task_SummaryTests:
         Task.objects.all().delete()
         self.tz = pytz.timezone("Asia/Tokyo")
 
-
     def test_task_summary(self):
         client = APIClient()
-        tz = pytz.timezone('Asia/Tokyo')
-        
+        tz = pytz.timezone("Asia/Tokyo")
+
         # データをセットアップ
         Task.objects.create(
             title="Task 1",
@@ -280,14 +283,11 @@ class TestAPI_Task_SummaryTests:
         )
 
         # GETリクエストを作成
-        response = client.get('/api/todo/summary/')
+        response = client.get("/api/todo/summary/")
 
         # ステータスコードを確認
         assert response.status_code == 200
 
         # レスポンスデータを確認
-        expected_data = {
-            'total_tasks': 2,
-            'completed_tasks': 1
-        }
+        expected_data = {"total_tasks": 2, "completed_tasks": 1}
         assert response.data == expected_data

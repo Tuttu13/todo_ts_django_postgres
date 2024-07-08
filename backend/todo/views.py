@@ -11,28 +11,32 @@ class CustomPagination(PageNumberPagination):
     CustomPaginationクラス
     ページネーションをカスタマイズし、1ページあたりのタスク数を3に設定
     """
+
     page_size = 3
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
 
     def get_paginated_response(self, data):
         """
         ページネーションのレスポンスをカスタマイズ
-        
+
         Args:
             data (list): シリアライズされたタスクデータのリスト
-        
+
         Returns:
             Response: ページネーションされたレスポンスデータ
         """
-        return Response({
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link()
-            },
-            'count': self.page.paginator.count,
-            'page_size': self.page_size,
-            'results': data
-        })
+        return Response(
+            {
+                "links": {
+                    "next": self.get_next_link(),
+                    "previous": self.get_previous_link(),
+                },
+                "count": self.page.paginator.count,
+                "page_size": self.page_size,
+                "results": data,
+            }
+        )
+
 
 class ListView(generics.ListCreateAPIView):
     """
@@ -41,9 +45,11 @@ class ListView(generics.ListCreateAPIView):
     POSTリクエストで新しいタスクを作成
     タスクは期限日付が古い順に並べ替えられ
     """
-    queryset = Task.objects.all().order_by('due_date')
+
+    queryset = Task.objects.all().order_by("due_date")
     serializer_class = TaskSerializer
-    pagination_class = CustomPagination  
+    pagination_class = CustomPagination
+
 
 class DetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -52,20 +58,19 @@ class DetailView(generics.RetrieveUpdateDestroyAPIView):
     PUT/PATCHリクエストでタスクを更新
     DELETEリクエストでタスクを削除
     """
+
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 def task_summary(request):
     """
     タスクのサマリー情報を取得するAPIビュー
-    
+
     Returns:
         Response: タスクのサマリー情報。
     """
     total_tasks = Task.objects.count()
     completed_tasks = Task.objects.filter(status=2).count()
-    return Response({
-        'total_tasks': total_tasks,
-        'completed_tasks': completed_tasks
-    })
+    return Response({"total_tasks": total_tasks, "completed_tasks": completed_tasks})
