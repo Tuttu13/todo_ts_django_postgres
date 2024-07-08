@@ -89,7 +89,7 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),  # ローカル実行の場合は、ホスト名を"DB_LOCALHOST"
+        "HOST": os.environ.get("DB_HOST"),  # ローカルでテストを実行する場合は、ホスト名を"DB_LOCALHOST"
         "PORT": os.environ.get("DB_PORT"),
     }
 }
