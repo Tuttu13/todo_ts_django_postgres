@@ -3,12 +3,14 @@ import React from "react";
 import { Task } from "../types/Task";
 import { formatDate, priorityMap, statusMap } from "../utils";
 
+// TaskDetailModalコンポーネントのプロパティの型定義
 interface TaskDetailModalProps {
-  open: boolean;
-  onClose: () => void;
-  task: Task;
+  open: boolean; // モーダルの開閉状態
+  onClose: () => void; // モーダルを閉じる関数
+  task: Task; // 表示するタスクの詳細
 }
 
+// TaskDetailModalコンポーネント
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   open,
   onClose,

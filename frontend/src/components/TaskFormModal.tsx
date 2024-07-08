@@ -6,40 +6,41 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Task } from "../types/Task";
 import { formatDateToLocal, priorityMap, statusMap } from "../utils";
 
+// TaskFormModalコンポーネントのプロパティの型定義
 interface TaskFormModalProps {
-  open: boolean;
-  onClose: () => void;
-  taskToEdit: Task | null;
-  onSave: (task: Task) => Promise<void>;
+  open: boolean; // モーダルの開閉状態
+  onClose: () => void; // モーダルを閉じる関数
+  taskToEdit: Task | null; // 編集対象のタスク
+  onSave: (task: Task) => Promise<void>; // タスク保存時に呼ばれる関数
 }
 
+// タスクの初期状態
+const initialTaskState: Task = {
+  id: 0,
+  title: "",
+  description: "",
+  status: 0,
+  priority: 0,
+  due_date: "",
+  created_at: "",
+  updated_at: "",
+};
+
+// TaskFormModalコンポーネント
 const TaskFormModal: React.FC<TaskFormModalProps> = ({
   open,
   onClose,
   taskToEdit,
   onSave,
 }) => {
-  const initialTaskState: Task = useMemo(
-    () => ({
-      id: 0,
-      title: "",
-      description: "",
-      status: 0,
-      priority: 0,
-      due_date: "",
-      created_at: "",
-      updated_at: "",
-    }),
-    []
-  );
+  const [task, setTask] = useState<Task>(initialTaskState); // タスクの状態
+  const [errors, setErrors] = useState<{ [key: string]: string }>({}); // バリデーションエラーの状態
 
-  const [task, setTask] = useState<Task>(initialTaskState);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
+  // モーダルが開かれるときに編集対象のタスクをセット
   useEffect(() => {
     if (open) {
       if (taskToEdit) {
@@ -53,8 +54,9 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
         setTask(initialTaskState);
       }
     }
-  }, [open, taskToEdit, initialTaskState]);
+  }, [open, taskToEdit]);
 
+  // フォームの入力が変更されたときに状態を更新
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setTask({ ...task, [name]: value });
@@ -64,6 +66,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
     }
   };
 
+  // フォームのバリデーションを行う関数
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
     if (!task.title.trim()) newErrors.title = "題名は必須です。";
@@ -72,6 +75,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  // 保存ボタンがクリックされたときの処理
   const handleSave = async () => {
     if (validate()) {
       if (!task.due_date) {

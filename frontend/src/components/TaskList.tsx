@@ -1,16 +1,7 @@
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@mui/material";
+import { Box, List } from "@mui/material";
 import React from "react";
 import { Task } from "../types/Task";
-import { formatDate, priorityMap, statusMap } from "../utils"; // インポートを追加
+import TaskItem from "./TaskItem";
 
 interface TaskListProps {
   tasks: Task[];
@@ -29,50 +20,13 @@ const TaskList: React.FC<TaskListProps> = ({
     <Box>
       <List>
         {tasks.map((task) => (
-          <ListItem
+          <TaskItem
             key={task.id}
-            button
-            onClick={() => onViewTask(task)}
-            sx={{
-              border: "1px solid #ddd",
-              mb: 1,
-              "&:hover": { backgroundColor: "#f5f5f5" },
-            }}
-          >
-            <ListItemText
-              primary={task.title}
-              secondary={
-                <Box>
-                  <div>ステータス: {statusMap[task.status]}</div>
-                  <div>優先度: {priorityMap[task.priority]}</div>
-                  <div>
-                    期限: {task.due_date ? formatDate(task.due_date) : "なし"}
-                  </div>
-                </Box>
-              }
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEditTask(task);
-                }}
-                sx={{ marginRight: 1 }}
-              >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                edge="end"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDeleteTask(task.id);
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+            task={task}
+            onEdit={onEditTask}
+            onDelete={onDeleteTask}
+            onView={onViewTask}
+          />
         ))}
       </List>
     </Box>

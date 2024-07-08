@@ -5,13 +5,15 @@ import React from "react";
 import { Task } from "../types/Task";
 import { formatDate, priorityMap, statusMap } from "../utils";
 
+// TaskItemコンポーネントのプロパティの型定義
 interface TaskItemProps {
-  task: Task;
-  onEdit: (task: Task) => void;
-  onDelete: (taskId: number) => void;
-  onView: (task: Task) => void; // 追加
+  task: Task; // タスクオブジェクト
+  onEdit: (task: Task) => void; // タスク編集時に呼ばれる関数
+  onDelete: (taskId: number) => void; // タスク削除時に呼ばれる関数
+  onView: (task: Task) => void; // タスク表示時に呼ばれる関数
 }
 
+// TaskItemコンポーネント
 const TaskItem: React.FC<TaskItemProps> = ({
   task,
   onEdit,
@@ -26,7 +28,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
         mb: 2,
         cursor: "pointer",
       }}
-      onClick={() => onView(task)} // クリックイベントを追加
+      onClick={() => onView(task)} // タスク表示のクリックイベントを追加
     >
       <ListItemText
         primary={task.title}
@@ -42,7 +44,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       />
       <Box>
         <IconButton
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
             onEdit(task);
           }}
@@ -50,7 +52,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
           <EditIcon />
         </IconButton>
         <IconButton
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
             onDelete(task.id);
           }}
