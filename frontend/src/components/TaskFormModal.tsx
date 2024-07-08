@@ -72,7 +72,7 @@ const TaskFormModal: React.FC<TaskFormModalProps> = ({
   const handleSave = async () => {
     if (validate()) {
       if (!task.due_date) {
-        task.due_date = "";
+        task.due_date = null;
       }
       await onSave(task);
       onClose();
