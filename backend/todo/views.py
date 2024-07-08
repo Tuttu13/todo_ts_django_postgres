@@ -39,7 +39,7 @@ class ListView(generics.ListCreateAPIView):
     タスクリストの表示と新規作成を行うAPI
     GETリクエストでタスクのリストを取得
     POSTリクエストで新しいタスクを作成
-    タスクは期限日順に並べ替えられ、ページネーションされます。
+    タスクは期限日付が古い順に並べ替えられ
     """
     queryset = Task.objects.all().order_by('due_date')
     serializer_class = TaskSerializer
