@@ -134,12 +134,12 @@ const Home: React.FC = () => {
           前
         </Button>
         <Typography variant="body1" sx={{ display: "inline", marginX: 2 }}>
-          {currentPage} / {totalPages}
+          {totalTasks === 0 ? 0 : currentPage} / {totalPages}
         </Typography>
         <Button
           variant="outlined"
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || totalTasks === 0}
         >
           次
         </Button>
