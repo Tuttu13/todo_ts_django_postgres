@@ -53,6 +53,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# フロントエンドア(Reactアプリ)設定
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
   'http://localhost:3000',
@@ -88,7 +89,7 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),  # ローカル実行の場合は、ホスト名を"DB_LOCALHOST"
+        "HOST": os.environ.get("DB_LOCALHOST"),  # ローカル実行の場合は、ホスト名を"DB_LOCALHOST"
         "PORT": os.environ.get("DB_PORT"),
     }
 }
