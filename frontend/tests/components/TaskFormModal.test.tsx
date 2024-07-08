@@ -14,10 +14,9 @@ const task: Task = {
   updated_at: "2023-06-01T00:00:00Z",
 };
 
-// 日付フォーマットの関数（実際のユーティリティ関数に一致するように調整）
 const formatDateToLocal = (date: string): string => {
   const dt = new Date(date);
-  dt.setHours(dt.getHours() + 9); // 日本時間に変換
+  dt.setHours(dt.getHours() + 9);
   return dt.toISOString().slice(0, 16);
 };
 
@@ -32,10 +31,8 @@ describe("TaskFormModal コンポーネント テスト", () => {
       />
     );
 
-    // タイトルの確認
     expect(screen.getByText("タスクを編集")).toBeInTheDocument();
 
-    // 各フォームフィールドの値を確認
     expect(screen.getByRole("textbox", { name: "題名" })).toHaveValue(
       task.title
     );
@@ -64,10 +61,8 @@ describe("TaskFormModal コンポーネント テスト", () => {
       />
     );
 
-    // キャンセルボタンをクリック
     fireEvent.click(screen.getByText("キャンセル"));
 
-    // onCloseが呼び出されたことを確認
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -84,15 +79,12 @@ describe("TaskFormModal コンポーネント テスト", () => {
       />
     );
 
-    // 題名を変更
     fireEvent.change(screen.getByRole("textbox", { name: "題名" }), {
       target: { value: "Updated Task" },
     });
 
-    // 保存ボタンをクリック
     fireEvent.click(screen.getByText("保存"));
 
-    // onSaveが呼び出されたことを確認
     await waitFor(() => {
       expect(onSave).toHaveBeenCalledWith({
         ...task,
@@ -101,7 +93,6 @@ describe("TaskFormModal コンポーネント テスト", () => {
       });
     });
 
-    // onCloseが呼び出されたことを確認
     expect(onClose).toHaveBeenCalled();
   });
 
@@ -115,7 +106,6 @@ describe("TaskFormModal コンポーネント テスト", () => {
       />
     );
 
-    // 題名と詳細を空にする
     fireEvent.change(screen.getByRole("textbox", { name: "題名" }), {
       target: { value: "" },
     });
@@ -123,10 +113,8 @@ describe("TaskFormModal コンポーネント テスト", () => {
       target: { value: "" },
     });
 
-    // 保存ボタンをクリック
     fireEvent.click(screen.getByText("保存"));
 
-    // バリデーションエラーメッセージが表示されることを確認
     expect(screen.getByText("題名は必須です。")).toBeInTheDocument();
     expect(screen.getByText("詳細は必須です。")).toBeInTheDocument();
   });

@@ -6,7 +6,7 @@ import {
   deleteTask,
   getTasks,
   getTaskSummary,
-  updateTask, // updateTaskのインポートを追加
+  updateTask,
 } from "../../src/services/api";
 import { Task } from "../../src/types/Task";
 
@@ -40,7 +40,7 @@ const mockSummary = {
   completed_tasks: 1,
 };
 
-describe("Home component", () => {
+describe("Home テスト", () => {
   beforeEach(() => {
     (getTasks as jest.Mock).mockResolvedValue({
       tasks: mockTasks,
@@ -53,7 +53,7 @@ describe("Home component", () => {
     jest.clearAllMocks();
   });
 
-  test("renders the Home component with tasks", async () => {
+  test("初期表示の確認", async () => {
     render(<Home />);
 
     expect(screen.getByText("TODOアプリ")).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe("Home component", () => {
     });
   });
 
-  test("opens the task form modal when '新規タスク登録' button is clicked", async () => {
+  test("新規タスク登録ボタンを押したとき、モーダル画面表示されることの確認", async () => {
     render(<Home />);
 
     fireEvent.click(screen.getByText("新規タスク登録"));
@@ -73,7 +73,7 @@ describe("Home component", () => {
     });
   });
 
-  test("handles task addition", async () => {
+  test("タスクを追加できることの確認", async () => {
     render(<Home />);
 
     fireEvent.click(screen.getByText("新規タスク登録"));
@@ -95,7 +95,7 @@ describe("Home component", () => {
     });
   });
 
-  test("handles task deletion", async () => {
+  test("タスクを削除できることの確認", async () => {
     render(<Home />);
 
     await waitFor(() => {
@@ -109,29 +109,7 @@ describe("Home component", () => {
     });
   });
 
-  test("displays error message when API call fails", async () => {
-    (getTasks as jest.Mock).mockRejectedValueOnce(new Error("API Error"));
-    (getTaskSummary as jest.Mock).mockResolvedValue(mockSummary);
-
-    render(<Home />);
-
-    // Mock console.error to capture error messages
-    const consoleErrorMock = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    await waitFor(() => {
-      expect(consoleErrorMock).toHaveBeenCalledWith(
-        "Error fetching tasks:",
-        expect.any(Error)
-      );
-    });
-
-    // Restore console.error
-    consoleErrorMock.mockRestore();
-  });
-
-  test("updates task status correctly", async () => {
+  test("タスクを更新できることの確認", async () => {
     const updatedTask = { ...mockTasks[0], status: 2 };
     (updateTask as jest.Mock).mockResolvedValue(updatedTask);
 
@@ -152,6 +130,26 @@ describe("Home component", () => {
       expect(updateTask).toHaveBeenCalledTimes(1);
       expect(screen.getByText("ステータス: 実施中")).toBeInTheDocument();
     });
+  });
+
+  test("API呼び出しが失敗した際にエラーメッセージが出力されることの確認", async () => {
+    (getTasks as jest.Mock).mockRejectedValueOnce(new Error("API Error"));
+    (getTaskSummary as jest.Mock).mockResolvedValue(mockSummary);
+
+    render(<Home />);
+
+    const consoleErrorMock = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith(
+        "Error fetching tasks:",
+        expect.any(Error)
+      );
+    });
+
+    consoleErrorMock.mockRestore();
   });
 });
 

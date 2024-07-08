@@ -12,7 +12,7 @@ import { Task } from "../../src/types/Task";
 const mock = new MockAdapter(axios);
 
 describe("API calls", () => {
-  const tasks: Task[] = [
+  const tasksPage1: Task[] = [
     {
       id: 1,
       title: "飲み会",
@@ -34,7 +34,7 @@ describe("API calls", () => {
       updated_at: "2024-07-07T07:14:59.122462+09:00",
     },
     {
-      id: 4,
+      id: 3,
       title: "買物",
       description: "コーヒー豆",
       status: 0,
@@ -45,19 +45,63 @@ describe("API calls", () => {
     },
   ];
 
+  const tasksPage2: Task[] = [
+    {
+      id: 4,
+      title: "ジム",
+      description: "筋トレ",
+      status: 0,
+      priority: 2,
+      due_date: "2024-07-11T07:00:00+09:00",
+      created_at: "2024-07-08T07:14:02.902191+09:00",
+      updated_at: "2024-07-08T07:14:02.902191+09:00",
+    },
+    {
+      id: 5,
+      title: "読書",
+      description: "本を読む",
+      status: 1,
+      priority: 1,
+      due_date: "2024-07-12T20:00:00+09:00",
+      created_at: "2024-07-08T07:14:02.902191+09:00",
+      updated_at: "2024-07-08T07:14:02.902191+09:00",
+    },
+    {
+      id: 6,
+      title: "プレゼン準備",
+      description: "スライドを作成",
+      status: 2,
+      priority: 3,
+      due_date: "2024-07-13T09:00:00+09:00",
+      created_at: "2024-07-08T07:14:02.902191+09:00",
+      updated_at: "2024-07-08T07:14:02.902191+09:00",
+    },
+  ];
+
   beforeEach(() => {
     mock.onGet("http://127.0.0.1:8000/api/todo/?page=1").reply(200, {
       links: {
         next: "http://127.0.0.1:8000/api/todo/?page=2",
         previous: null,
       },
-      count: 14,
+      count: 6,
       page_size: 3,
-      results: tasks,
+      results: tasksPage1,
     });
+
+    mock.onGet("http://127.0.0.1:8000/api/todo/?page=2").reply(200, {
+      links: {
+        next: null,
+        previous: "http://127.0.0.1:8000/api/todo/?page=1",
+      },
+      count: 6,
+      page_size: 3,
+      results: tasksPage2,
+    });
+
     mock.onGet("http://127.0.0.1:8000/api/todo/summary/").reply(200, {
-      total_tasks: 10,
-      completed_tasks: 5,
+      total_tasks: 6,
+      completed_tasks: 2,
     });
   });
 
@@ -66,16 +110,16 @@ describe("API calls", () => {
     mock.reset();
   });
 
-  it("should fetch tasks", async () => {
+  test("タスクの取得", async () => {
     const result = await getTasks(1);
 
-    expect(result.tasks).toEqual(tasks);
-    expect(result.totalPages).toBe(5);
+    expect(result.tasks).toEqual(tasksPage1);
+    expect(result.totalPages).toBe(2);
   });
 
-  it("should create a task", async () => {
+  test("タスクの作成", async () => {
     const newTask: Task = {
-      id: 3,
+      id: 7,
       title: "新しいタスク",
       description: "新しいタスクの説明",
       status: 0,
@@ -91,7 +135,7 @@ describe("API calls", () => {
     expect(result).toEqual(newTask);
   });
 
-  it("should update a task", async () => {
+  test("タスクの更新", async () => {
     const updatedTask: Task = {
       id: 1,
       title: "更新されたタスク",
@@ -109,7 +153,7 @@ describe("API calls", () => {
     expect(result).toEqual(updatedTask);
   });
 
-  it("should delete a task", async () => {
+  test("タスクの削除", async () => {
     mock.onDelete("http://127.0.0.1:8000/api/todo/1/").reply(204);
 
     await deleteTask(1);
@@ -120,9 +164,9 @@ describe("API calls", () => {
     );
   });
 
-  it("should fetch task summary", async () => {
+  test("タスクサマリーの取得", async () => {
     const result = await getTaskSummary();
 
-    expect(result).toEqual({ total_tasks: 10, completed_tasks: 5 });
+    expect(result).toEqual({ total_tasks: 6, completed_tasks: 2 });
   });
 });
