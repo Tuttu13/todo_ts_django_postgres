@@ -111,8 +111,6 @@ def task_summary(request):
     total_tasks = Task.objects.count()
     completed_tasks = Task.objects.filter(status=2).count()
     return Response({"total_tasks": total_tasks, "completed_tasks": completed_tasks})
-
-
 ```
 3. 単体テストの作成  
 フロントエンド・バックエンドの単体テスト作成して、既存の機能に影響を受けていないかを確認することできるしました。  
@@ -122,3 +120,67 @@ def task_summary(request):
 
 4. API呼び出しの非同期処理  
 API呼び出しを非同期に処理しています。ブラウザがデータの取得や保存の待機中にフリーズしたり、動作が遅くなることを防ぎました。
+
+## テストカバレッジ
+
+### フロントエンド
+``` bash
+$ jest --coverage
+ PASS  tests/utils.test.ts
+ PASS  tests/services/api.test.ts
+ PASS  tests/components/TaskSummary.test.tsx (5.764 s)
+ PASS  tests/components/Header.test.tsx (5.796 s)
+ PASS  tests/components/TaskDetailModal.test.tsx (5.895 s)
+ PASS  tests/components/TaskList.test.tsx (5.969 s)
+ PASS  tests/components/TaskItem.test.tsx (5.979 s)
+ PASS  tests/components/TaskFormModal.test.tsx (6.388 s)
+ PASS  tests/pages/Home.test.tsx (6.507 s)
+----------------------|---------|----------|---------|---------|-------------------------------------------
+File                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+----------------------|---------|----------|---------|---------|-------------------------------------------
+All files             |   94.06 |       75 |   86.66 |    92.3 |                                           
+ src                  |     100 |      100 |     100 |     100 |                                           
+  utils.ts            |     100 |      100 |     100 |     100 |                                           
+ src/components       |   98.05 |    69.56 |   94.44 |   97.75 |                                           
+  Header.tsx          |     100 |      100 |     100 |     100 |                                           
+  TaskDetailModal.tsx |     100 |       50 |     100 |     100 | 33-56                                     
+  TaskFormModal.tsx   |     100 |    92.85 |     100 |     100 | 45                                        
+  TaskItem.tsx        |    91.3 |       20 |      80 |    90.9 | 49-50                                     
+  TaskList.tsx        |     100 |      100 |     100 |     100 |                                           
+  TaskSummary.tsx     |     100 |      100 |     100 |     100 |                                           
+ src/pages            |   86.81 |    81.81 |   70.58 |   81.53 |                                           
+  Home.tsx            |   86.81 |    81.81 |   70.58 |   81.53 | 47-48,82-83,94-95,101-102,107,139-150,165 
+ src/services         |     100 |    83.33 |     100 |     100 |                                           
+  api.ts              |     100 |    83.33 |     100 |     100 | 7                                         
+----------------------|---------|----------|---------|---------|-------------------------------------------
+
+Test Suites: 9 passed, 9 total
+Tests:       31 passed, 31 total
+Snapshots:   0 total
+Time:        7.705 s
+```
+
+
+### バックエンド
+``` bash
+$ docker compose exec backend pytest backend/todo/tests --cov
+---------- coverage: platform linux, python 3.12.4-final-0 -----------
+Name                                      Stmts   Miss  Cover
+-------------------------------------------------------------
+backend/backend/__init__.py                   0      0   100%
+backend/backend/settings.py                  21      0   100%
+backend/backend/urls.py                       3      0   100%
+backend/todo/__init__.py                      0      0   100%
+backend/todo/admin.py                         1      0   100%
+backend/todo/apps.py                          4      0   100%
+backend/todo/migrations/0001_initial.py       5      0   100%
+backend/todo/migrations/__init__.py           0      0   100%
+backend/todo/models.py                       13      1    92%
+backend/todo/serializers.py                   6      0   100%
+backend/todo/tests/__init__.py                0      0   100%
+backend/todo/tests/test_views.py            114      0   100%
+backend/todo/urls.py                          3      0   100%
+backend/todo/views.py                        23      0   100%
+-------------------------------------------------------------
+TOTAL                                       193      1    99%
+```
