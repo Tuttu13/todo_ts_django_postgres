@@ -61,6 +61,7 @@ npm start
 ジェネリックビュー(ListCreateAPIViewとRetrieveUpdateDestroyAPIView)を使用することで、共通のCRUD操作を実装しました。
 1. ページネーションの実装  
 1ページあたりのタスクの取得件数をを設定することで画面遷移たびにAPIを実施する処理にして、大量のデータを効率的に処理できるようにしました。  
+変数名```page_size```の値を変更することによって、1ページあたりタスクの取得数を設定できます。(初期値は3)  
 実装箇所:```backend/todo/views.py``` 
 ``` python
 from rest_framework import generics
@@ -127,7 +128,7 @@ def task_summary(request):
 API呼び出しを非同期に処理しています。ブラウザがデータの取得や保存の待機中にフリーズしたり、動作が遅くなることを防ぎました。
 
 5. タスクとサマリーの取得をuseEffectで管理  
-useEffectを使用して、初回表示時とページが遷移するたびにタスクとサマリーを取得するようにしました。  
+useEffectを使用して、初回表示時とページが遷移するたびにタスクとサマリーを取得し表示するようにしました。  
 ``` javascrypt
   useEffect(() => {
     fetchTasks(currentPage);
