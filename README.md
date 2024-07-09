@@ -126,6 +126,16 @@ def task_summary(request):
 4. API呼び出しの非同期処理  
 API呼び出しを非同期に処理しています。ブラウザがデータの取得や保存の待機中にフリーズしたり、動作が遅くなることを防ぎました。
 
+5. タスクとサマリーの取得をuseEffectで管理  
+useEffectを使用して、初回表示時とページが遷移するたびにタスクとサマリーを取得するようにしました。  
+``` javascrypt
+  useEffect(() => {
+    fetchTasks(currentPage);
+    fetchTaskSummary();
+  }, [currentPage, fetchTasks, fetchTaskSummary]);
+```
+
+
 ## テストカバレッジ
 以下は、フロントエンドおよびバックエンドのテストカバレッジの詳細です。
 ### フロントエンド
